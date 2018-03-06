@@ -22,7 +22,7 @@
 						  <input type="submit" id="submit1" name="submit1" value="Search" />
 						</p>
 					</div>
-				</form>
+				</form> 
 		<?php
 //require 'db_open.php';
 
@@ -40,11 +40,11 @@ if(isset($_POST['search']))
 		$con = mysqli_connect('localhost', 'root', 'root', "$db_name") or die(mysql_error());
 		// $db = mysql_select_db('Library', $con);
 		$search='%'.$search.'%';
-		//echo($search);
-		$query = "select b.ISBN, b.title, a.Author_name, b.cover, b.pages from book as b, book_authors as ba, authors as a Where b.ISBN=ba.ISBN and ba.Author_id=a.Author_id and 
-(a.Author_name like "."'$search'"." or b.isbn="."'$search'"." or b.Title like "."'$search'".")";
+		echo($search);
+		$query = "select b.ISBN, b.title, group_concat(a.Author_name) as author_name, b.cover, b.pages from book as b, book_authors as ba, authors as a Where b.ISBN=ba.ISBN and ba.Author_id=a.Author_id and 
+(a.Author_name like "."'$search'"." or b.isbn="."'$search'"." or b.Title like "."'$search'".") GROUP BY b.ISBN";
 
-		//echo ($query);
+//		echo ($query);
 		
 		
 		
@@ -79,7 +79,7 @@ if(isset($_POST['search']))
     //echo "<td><a href=\"add_borrower.php?id=" . $rows['id'] . "\">Borrow</a></td>";
 
 			 	echo "<tr>"."<td align='center'>".'ISBN'."</td>"."<td>".$row['ISBN'] ."</td> "."</tr>";
-			 	echo "<tr>"."<td align='center'>".'Author name'."</td>"."<td>".$row['Author_name'] ."</td> "."</tr>";
+			 	echo "<tr>"."<td align='center'>".'Author name'."</td>"."<td>".$row['author_name'] ."</td> "."</tr>";
 			 	echo "<tr>"."<td align='center'>".'cover'."</td>"."<td>".$row['cover'] ."</td> "."</tr>";
 			 	echo "<tr>"."<td align='center'>".'pages'."</td>"."<td>".$row['pages']."</td> "."</tr>";
 			 	echo "<tr>"."<td align='center'>".'Borrow'."</td>"."<td><a href=borrow_book.html>Borrow book"."</a>"."</td> "."</tr>";
@@ -104,7 +104,7 @@ if(isset($_POST['search']))
 				<ul>
 					<li><a href="home.html">Home</a></li>
 					<li><a href="add_borrower.html">Add Borrower</a></li>
-					<li><a href="view_borrower.html">View Borrower details<em>s</em></a></li>
+					<li><a href="view_borrower.html">View Borrower details</a></li>
 				    <li><a href="fines.html">Fines</a></li>
 				    <li><a href="#"></a></li>
 				</ul>
