@@ -18,11 +18,10 @@ $contact = $_POST['contact'];
 //echo $location;
 include('add_borrower.html');
 
-if(empty($FirstName) || empty($LastName) || empty($email) || empty($ssn))
+if(empty($FirstName) || empty($LastName) || empty($email) || empty($ssn) || empty($address) || empty($city) || empty($state) || empty($contact) )
 {
 	
 	echo "fields are empty".'<br>';
-	header("Location:add_borrower.html");
 }
 else{
 		$ssn_query = "select * from borrowers where SSN like "."'$ssn'"."";

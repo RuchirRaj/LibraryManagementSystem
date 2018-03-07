@@ -39,10 +39,10 @@ if(isset($_POST['search']))
 		$db_name = 'Library';
 		$con = mysqli_connect('localhost', 'root', 'root', "$db_name") or die(mysql_error());
 		// $db = mysql_select_db('Library', $con);
-		$search='%'.$search.'%';
-		echo($search);
+		$WildSearch='%'.$search.'%';
+		//echo($search);
 		$query = "select b.ISBN, b.title, group_concat(a.Author_name) as author_name, b.cover, b.pages from book as b, book_authors as ba, authors as a Where b.ISBN=ba.ISBN and ba.Author_id=a.Author_id and 
-(a.Author_name like "."'$search'"." or b.isbn="."'$search'"." or b.Title like "."'$search'".") GROUP BY b.ISBN";
+(a.Author_name like "."'$WildSearch'"." or b.isbn="."'$search'"." or b.Title like "."'$WildSearch'".") GROUP BY b.ISBN";
 
 //		echo ($query);
 		
@@ -60,7 +60,11 @@ if(isset($_POST['search']))
       		for ( $i = 0 ; $i < mysqli_num_rows($result) ; $i++ )
 			{
        			$row = mysqli_fetch_assoc($result);
-			 	echo "<table>";
+				$avail_query = "select count(*) as count from book_loans where ISBN='".$row['ISBN']."' and Date_in is null";
+				
+				$avail_result = mysqli_query($con, $avail_query);
+				$avail_row = mysqli_fetch_assoc($avail_result);
+				echo "<table>";
 			 	echo "<tr style='font-weight: bold;'>";
 				echo "</tr>";
 			 	echo "<table border='1' style='border-collapse: collapse;border-color: silver;'>";
@@ -82,8 +86,13 @@ if(isset($_POST['search']))
 			 	echo "<tr>"."<td align='center'>".'Author name'."</td>"."<td>".$row['author_name'] ."</td> "."</tr>";
 			 	echo "<tr>"."<td align='center'>".'cover'."</td>"."<td>".$row['cover'] ."</td> "."</tr>";
 			 	echo "<tr>"."<td align='center'>".'pages'."</td>"."<td>".$row['pages']."</td> "."</tr>";
-			 	echo "<tr>"."<td align='center'>".'Borrow'."</td>"."<td><a href=borrow_book.html>Borrow book"."</a>"."</td> "."</tr>";
-				
+				if ($avail_row['count']==0)
+				{
+					echo "<tr>"."<td align='center'>".'Availability'."</td>"."<td><a href=addCardID.php?isbn=".$row['ISBN'].">Check out"."</a>"."</td> "."</tr>";
+				}
+				else{
+					echo "<tr>"."<td align='center'>".'Availability'."</td>"."<td>unavailable"."</td> "."</tr>";
+				}
 			 	echo "</table>".'<br>';
       		}
   		}
