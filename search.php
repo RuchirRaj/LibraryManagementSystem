@@ -113,7 +113,7 @@ if(isset($_POST['search']))
 				<ul>
 					<li><a href="home.html">Home</a></li>
 					<li><a href="add_borrower.html">Add Borrower</a></li>
-					<li><a href="view_borrower.html">View Borrower details</a></li>
+					<li><a href="view_borrower.php">View Borrower details</a></li>
 				    <li><a href="fines.html">Fines</a></li>
 				    <li><a href="#"></a></li>
 				</ul>

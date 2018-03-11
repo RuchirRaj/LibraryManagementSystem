@@ -15,12 +15,21 @@
 		<h2>Add the card id of borrower </h2>
 		<br />
 	    <!--	<p><small>Management System</small></p>-->
+		<form method="post" action="view_borrower.php">
+					<div>
+						<p>
+						  <input type="text" id="card_id" name="card_id" value="" size="50" />    
+						  <input type="submit" id="submit1" name="submit1" value="submit" />
+						</p>
+					</div>
+				</form> 
+	    <!--	<p><small>Management System</small></p>-->
  
 <?php
 //require 'db_open.php';
 //echo ($_SERVER['REQUEST_METHOD']);
-session_start();
-$ISBN = $_SESSION['ISBN'];
+// session_start();
+// $ISBN = $_SESSION['ISBN'];
 if(isset($_POST['card_id']))
 {
 	$Card_id=$_POST['card_id'];
@@ -40,55 +49,47 @@ if(isset($_POST['card_id']))
 
    		$result = mysqli_query($con, $query);
 
-		$avail_query = "select count(*) as count from book_loans where ISBN='".$ISBN."' and Date_in is null";
+		// $avail_query = "select count(*) as count from book_loans where ISBN='".$ISBN."' and Date_in is null";
 				
-		$avail_result = mysqli_query($con, $avail_query);
-		$avail_row = mysqli_fetch_assoc($avail_result);
-		
-		for ( $i = 0 ; $i < mysqli_num_rows($result) ; $i++ )
-		{
-			$row = mysqli_fetch_assoc($result);
-			
-			echo "<table>";
-			echo "<tr style='font-weight: bold;'>";
-			echo "</tr>";
-			echo "<table border='1' style='border-collapse: collapse;border-color: silver;'>";
-		 
-			echo "<tr>";
-			
-			echo "</table>";
-			echo "<table>";
-			echo "<tr style='font-weight: bold;'>";
-		
-			echo "</tr>";
-			echo "<table border='1' style='border-collapse: collapse;border-color: silver;'>";
-			echo "<tr>"."<td align='center'>".'Title'."</td>"."<td>".$row['Title'] ."</td> "."</tr>";
-			echo "<tr>"."<td align='center'>".'ISBN'."</td>"."<td>".$row['ISBN'] ."</td> "."</tr>";
-			echo "<tr>"."<td align='center'>".'Checkout Date'."</td>"."<td>".$row['Date_out'] ."</td> "."</tr>";
-			echo "<tr>"."<td align='center'>".'Due_date'."</td>"."<td>".$row['Due_date'] ."</td> "."</tr>";
-			echo "</table>".'<br>';
-		}
-		
-		if (mysqli_num_rows($result) == 3)
+		// $avail_result = mysqli_query($con, $avail_query);
+		// $avail_row = mysqli_fetch_assoc($avail_result);
+		if (mysqli_num_rows($result) == 0)
 		{	
-			echo "Sorry, Request declined. You have already borrowed 3 books<br>";
+			echo "You have not borrowed any book.<br>";
 		} 
-		elseif($avail_row['count']!=0)
-		{
-			echo "Sorry, Request declined. Book is no longer available.<br>";
-		}
 		else
 		{
-			$insert_query = "insert into book_loans(ISBN, Card_id, Date_out, Due_date, Date_in) values('".$ISBN."', '".$Card_id."', current_date(), date_add(current_date(), interval 14 day), NULL)";
-			$insert_result = mysqli_query($con, $insert_query) or die('Card id is not valid');
-			mysqli_close($con);
-			echo "Book with $ISBN is checked out successfully with card id $Card_id".'<br>';
+			for ( $i = 0 ; $i < mysqli_num_rows($result) ; $i++ )
+			{
+				$row = mysqli_fetch_assoc($result);
+				
+				echo "<table>";
+				echo "<tr style='font-weight: bold;'>";
+				echo "</tr>";
+				echo "<table border='1' style='border-collapse: collapse;border-color: silver;'>";
+			 
+				echo "<tr>";
+				
+				echo "</table>";
+				echo "<table>";
+				echo "<tr style='font-weight: bold;'>";
+			
+				echo "</tr>";
+				echo "<table border='1' style='border-collapse: collapse;border-color: silver;'>";
+				echo "<tr>"."<td align='center'>".'Title'."</td>"."<td>".$row['Title'] ."</td> "."</tr>";
+				echo "<tr>"."<td align='center'>".'ISBN'."</td>"."<td>".$row['ISBN'] ."</td> "."</tr>";
+				echo "<tr>"."<td align='center'>".'Checkout Date'."</td>"."<td>".$row['Date_out'] ."</td> "."</tr>";
+				echo "<tr>"."<td align='center'>".'Due_date'."</td>"."<td>".$row['Due_date'] ."</td> "."</tr>";
+				echo "<tr>"."<td align='center'>".'Check in'."</td>"."<td><a href=checkIn.php?isbn=".$row['ISBN']."&cardId=$Card_id>Check in"."</a>"."</td> "."</tr>";
+		
+				echo "</table>".'<br>';
+			}
+			
 		}
-  		
 	}
 }
-session_unset();
-session_destroy();
+// session_unset();
+// session_destroy();
 ?>
 
 
