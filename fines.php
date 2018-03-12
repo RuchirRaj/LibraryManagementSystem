@@ -22,11 +22,9 @@ $db_name = 'Library';
 $con = mysqli_connect('localhost', 'root', 'root', "$db_name") or die(mysql_error());
 $data_query =  "select loan_id as fines_loan_id, datediff(current_date(), bl.Due_date) as due_days from book_loans as bl where datediff(current_date(), bl.Due_date)>0 and Date_in is NULL";
 $data_result = mysqli_query($con, $data_query) or die('Query "' . $data_query . '" failed: ' . mysqli_error($con));
-if (mysqli_num_rows($data_result) == 0)
-	{	
-		echo "Page has been refreshed";
-	} 
-else{	
+
+if (mysqli_num_rows($data_result) != 0)
+{	
 	for ( $i = 0 ; $i < mysqli_num_rows($data_result) ; $i++ )
 	{
 		$row = mysqli_fetch_assoc($data_result);
@@ -45,8 +43,22 @@ else{
 		}
 	}	
 }
+$update_query =  "select f.loan_id as fines_loan_id, datediff(bl.Date_in, bl.Due_date) as late_days from book_loans as bl, fines as f where f.loan_id=bl.loan_id and datediff(bl.Date_in, bl.Due_date)>0 and f.Paid = False";
+$update_result = mysqli_query($con, $update_query) or die('Query "' . $update_query . '" failed: ' . mysqli_error($con));
+if (mysqli_num_rows($update_result) != 0)
+{	
+	for ( $i = 0 ; $i < mysqli_num_rows($update_result) ; $i++ )
+	{
+		$row = mysqli_fetch_assoc($update_result);
+		$fine_amt = $row['late_days']*0.25;
+		$update_fine_query = "update fines set Fine_amt=".$fine_amt." where paid=FALSE";
+		$update_fine_result = mysqli_query($con, $update_fine_query) or die('Query "' . $update_fine_query . '" failed: ' . mysqli_error($con));
+	}
+}	
 
-$show_fine_query = "select bl.ISBN, bl.Card_id, b.First_name, b.Last_name, sum(f.fine_amt) as fine from book_loans as bl, fines as f, Borrowers as b where bl.Loan_id=f.Loan_id and f.paid=False and bl.Card_id= bl.Date_in is not NULL group by bl.Card_id";
+
+
+$show_fine_query = "select bl.Card_id, b.First_name, b.Last_name, sum(f.fine_amt) as fine from book_loans as bl, fines as f, Borrowers as b where bl.Loan_id=f.Loan_id and f.paid=False and bl.Card_id=b.Card_id and bl.Date_in is not NULL group by bl.Card_id";
 $show_fine_result = mysqli_query($con, $show_fine_query) or die('Query "' . $show_fine_query . '" failed: ' . mysqli_error($con));
 #------------------------------------------------------------------------------------------------------------
 if (mysqli_num_rows($show_fine_result) == 0)
@@ -76,7 +88,7 @@ else
 //echo "<td><a href=\"add_borrower.php?id=" . $rows['id'] . "\">Borrow</a></td>";
 
 		echo "<tr>"."<td align='center'>".'Fine amount'."</td>"."<td>".$row['fine'] ."</td> "."</tr>";
-		echo "<tr>"."<td align='center'>".'Pay Fine'."</td>"."<td><a href=payFine.php?cardId=".$row['Card_id'].">Pay Fine"."</a>"."</td> "."</tr>";
+		echo "<tr>"."<td align='center'>".'Pay Fine'."</td>"."<td><a href=view_borrower.php?cardId=".$row['Card_id'].">View details"."</a>"."</td> "."</tr>";
 	
 		echo "</table>".'<br>';
 		
