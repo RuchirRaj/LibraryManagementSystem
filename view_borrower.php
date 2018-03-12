@@ -42,17 +42,15 @@ if(isset($_POST['card_id']))
 	{
 		$db_name = 'Library';
 		$con = mysqli_connect('localhost', 'root', 'root', "$db_name") or die(mysql_error());
-		// $db = mysql_select_db('Library', $con);
+		$user_query = "select First_name, Last_name from borrowers where Card_id = '".$Card_id."'";
+		$user_result = mysqli_query($con, $user_query);
+		$row = mysqli_fetch_assoc($user_result);
+
+		echo "displaying details for ".$row['First_name']." ".$row['Last_name'].":\n";
 		$query = "select bl.ISBN, b.Title, bl.Date_out, bl.Due_date from book_loans as bl join book as b where bl.isbn=b.isbn and card_id='".$Card_id."' and date_in is null";
-		//echo($ISBN);
-		//echo ($query);
 
    		$result = mysqli_query($con, $query);
 
-		// $avail_query = "select count(*) as count from book_loans where ISBN='".$ISBN."' and Date_in is null";
-				
-		// $avail_result = mysqli_query($con, $avail_query);
-		// $avail_row = mysqli_fetch_assoc($avail_result);
 		if (mysqli_num_rows($result) == 0)
 		{	
 			echo "You have not borrowed any book.<br>";
@@ -106,7 +104,7 @@ if(isset($_POST['card_id']))
 					<li><a href="home.html">Home</a></li>
 					<li><a href="add_borrower.html">Add Borrower</a></li>
 					<li><a href="view_borrower.php">View Borrower details</a></li>
-				    <li><a href="fines.html">Fines</a></li>
+				    <li><a href="fines.php">Fines</a></li>
 				    <li><a href="#"></a></li>
 				</ul>
 			</li>

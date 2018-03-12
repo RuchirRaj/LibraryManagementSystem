@@ -30,15 +30,18 @@
 //echo ($_SERVER['REQUEST_METHOD']);
 // session_start();
 // $ISBN = $_SESSION['ISBN'];
-if(isset($_GET['cardId'] and $_GET['isbn']))
+if(isset($_GET['cardId'], $_GET['isbn']))
 {
 	$Card_id=$_GET['cardId'];
 	$ISBN = $_GET['isbn'];
+	echo ($Card_id);
+	echo ($ISBN);
 	if(empty($Card_id))
 	{
 		echo "Card_id field is empty";
 	}
 	elseif(empty($ISBN))
+	{
 		echo "ISBN field is empty";
 	}
 	else
@@ -47,49 +50,19 @@ if(isset($_GET['cardId'] and $_GET['isbn']))
 		$con = mysqli_connect('localhost', 'root', 'root', "$db_name") or die(mysql_error());
 		// $db = mysql_select_db('Library', $con);
 //		$query = "select bl.ISBN, b.Title, bl.Date_out, bl.Due_date from book_loans as bl join book as b where bl.isbn=b.isbn and card_id='".$Card_id."' and date_in is null";
-		$query = "update book_loans set date_in=current_date() where card_id=$Card_id and isbn=$ISBN and date_in is NULL;
+		$query = "update book_loans set date_in=current_date() where card_id='".$Card_id."' and isbn='".$ISBN."' and date_in is NULL";
 		//echo($ISBN);
 		//echo ($query);
 
-   		$result = mysqli_query($con, $query);
+   		$result = mysqli_query($con, $query) or die('Query "' . $query . '" failed: ' . mysqli_error($con));
+		mysqli_close($con);
+		echo "book has been checked in successfully in the database".'<br>';
 
 		// $avail_query = "select count(*) as count from book_loans where ISBN='".$ISBN."' and Date_in is null";
 				
 		// $avail_result = mysqli_query($con, $avail_query);
 		// $avail_row = mysqli_fetch_assoc($avail_result);
-		if (mysqli_num_rows($result) == 0)
-		{	
-			echo "You have not borrowed any book.<br>";
-		} 
-		else
-		{
-			for ( $i = 0 ; $i < mysqli_num_rows($result) ; $i++ )
-			{
-				$row = mysqli_fetch_assoc($result);
-				
-				echo "<table>";
-				echo "<tr style='font-weight: bold;'>";
-				echo "</tr>";
-				echo "<table border='1' style='border-collapse: collapse;border-color: silver;'>";
-			 
-				echo "<tr>";
-				
-				echo "</table>";
-				echo "<table>";
-				echo "<tr style='font-weight: bold;'>";
-			
-				echo "</tr>";
-				echo "<table border='1' style='border-collapse: collapse;border-color: silver;'>";
-				echo "<tr>"."<td align='center'>".'Title'."</td>"."<td>".$row['Title'] ."</td> "."</tr>";
-				echo "<tr>"."<td align='center'>".'ISBN'."</td>"."<td>".$row['ISBN'] ."</td> "."</tr>";
-				echo "<tr>"."<td align='center'>".'Checkout Date'."</td>"."<td>".$row['Date_out'] ."</td> "."</tr>";
-				echo "<tr>"."<td align='center'>".'Due_date'."</td>"."<td>".$row['Due_date'] ."</td> "."</tr>";
-				echo "<tr>"."<td align='center'>".'Check in'."</td>"."<td><a href=checkIn.php?isbn=".$row['ISBN']."&cardId=$Card_id>Check in"."</a>"."</td> "."</tr>";
 		
-				echo "</table>".'<br>';
-			}
-			
-		}
 	}
 }
 // session_unset();
@@ -110,7 +83,7 @@ if(isset($_GET['cardId'] and $_GET['isbn']))
 					<li><a href="home.html">Home</a></li>
 					<li><a href="add_borrower.html">Add Borrower</a></li>
 					<li><a href="view_borrower.php">View Borrower details</a></li>
-				    <li><a href="fines.html">Fines</a></li>
+				    <li><a href="fines.php">Fines</a></li>
 				    <li><a href="#"></a></li>
 				</ul>
 			</li>
