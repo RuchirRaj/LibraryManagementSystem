@@ -114,7 +114,7 @@ if(isset($_POST['search']))
 					<li><a href="home.html">Home</a></li>
 					<li><a href="add_borrower.html">Add Borrower</a></li>
 					<li><a href="view_borrower.php">View Borrower details</a></li>
-				    <li><a href="fines.php">Fines</a></li>
+				    <li><a href="fines.php">Refresh Fines</a></li>
 				    <li><a href="#"></a></li>
 				</ul>
 			</li>
